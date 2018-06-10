@@ -4,7 +4,7 @@
 
 const cp = require('child_process');
 const path = require('path');
-const expect = require('chai').expect;
+// const expect = require('chai').expect;
 const streamSplitter = require('stream-splitter');
 
 const simCmd = path.join(__dirname, '/node_modules/.bin/hue-simulator');
@@ -36,13 +36,13 @@ function subscribe(type, rx, cb) {
     return subIndex;
 }
 
-function unsubscribe(type, subIndex) {
-    if (type === 'sim') {
-        delete simSubscriptions[subIndex];
-    } else if (type === 'hue') {
-        delete hueSubscriptions[subIndex];
-    }
-}
+// function unsubscribe(type, subIndex) {
+//     if (type === 'sim') {
+//         delete simSubscriptions[subIndex];
+//     } else if (type === 'hue') {
+//         delete hueSubscriptions[subIndex];
+//     }
+// }
 
 function matchSubscriptions(type, data) {
     let subs;
@@ -74,11 +74,11 @@ function startHue() {
     huePipeOut = hue.stdout.pipe(streamSplitter('\n'));
     huePipeErr = hue.stderr.pipe(streamSplitter('\n'));
     huePipeOut.on('token', data => {
-        console.log('hue', data.toString())
+        console.log('hue', data.toString());
         matchSubscriptions('hue', data.toString());
     });
     huePipeErr.on('token', data => {
-        console.log('hue', data.toString())
+        console.log('hue', data.toString());
         matchSubscriptions('hue', data.toString());
     });
 }
