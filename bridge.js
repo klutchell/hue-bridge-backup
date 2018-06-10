@@ -45,7 +45,7 @@ Bridge.prototype.get = function(endpoint, fn) {
      
     req.on('error', function (err) {
         console.log('request error', err);
-        req.abort();
+        // req.abort();
     });
 };
 

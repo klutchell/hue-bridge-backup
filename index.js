@@ -2,12 +2,25 @@
 
 'use strict';
 
-const config = require('config.json')('./config.json');
-const Bridge = require('./bridge');
+const config_file = './config.json';
+
+const config = require('config.json')(config_file);
+const args = require('./yargs.js');
+const Bridge = require('./bridge.js');
 const fs = require('fs');
 
 const valid_endpoints = [ "config", "groups", "lights", "resourcelinks", "rules", "scenes", "schedules", "sensors" ];
-const hue_bridge = new Bridge(config.bridge_ip, config.bridge_user);
+
+var settings = {};
+settings.bridge = args.bridge || config.bridge;
+settings.user = args.user || config.user;
+
+// save config to file for reuse
+fs.writeFile(config_file, JSON.stringify(settings, null, 2), 'utf8', function (err) {
+    if (err) { return console.log(err); }
+});
+
+var hue_bridge = new Bridge(settings.bridge, settings.user);
 
 function backup(outdir, arr) {
     
@@ -32,9 +45,7 @@ function backup(outdir, arr) {
             
             // write data to file
             fs.writeFile(outfile, data, 'utf8', function (err) {
-                if (err) {
-                    return console.log(err);
-                }
+                if (err) { return console.log(err); }
                 console.log("saved to " + outfile);
             });
         });
@@ -42,4 +53,4 @@ function backup(outdir, arr) {
 }
 
 const outdir = "./" + Date.now();
-backup(outdir, process.argv.slice(2));
+backup(outdir, args._);
