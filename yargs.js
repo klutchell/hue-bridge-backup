@@ -1,29 +1,6 @@
-const pkg = require('./package.json');
+#!/usr/bin/env node
 
-// module.exports = require('yargs')
-//     .env('HUECONF')
-//     .usage(pkg.name + ' ' + pkg.version + '\n' + pkg.description + '\n\nUsage: $0 [options]')
-//     .describe('user', 'Hue bridge user')
-//     .describe('bridge', 'Hue bridge address')
-//     .describe('debug', 'Enable debug logging')
-//     .boolean('debug')
-//     .string('user')
-//     .string('bridge')
-//     .alias({
-//         h: 'help',
-//         u: 'user',
-//         d: 'debug',
-//         b: 'bridge',
-//         v: 'version'
-//     })
-//     .default({
-//         user: 'newdeveloper',
-//         bridge: '127.0.0.1',
-//         debug: false
-//     })
-//     .version()
-//     .help('help')
-//     .argv;
+'use strict';
 
 module.exports = require('yargs')
     .usage('Usage: $0 <endpoints> [options]')
@@ -32,6 +9,7 @@ module.exports = require('yargs')
     .alias('u', 'user')
     .alias('b', 'bridge')
     .alias('d', 'debug')
+    .alias('h', 'help')
     .nargs('u', 1)
     .nargs('b', 1)
     .nargs('d', 0)
@@ -43,6 +21,5 @@ module.exports = require('yargs')
     .string('bridge')
     .demandCommand(1)
     .help('h')
-    .alias('h', 'help')
     .epilog('Copyright 2018 <kylemharding@gmail.com>')
     .argv;
