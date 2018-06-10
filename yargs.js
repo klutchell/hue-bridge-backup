@@ -3,23 +3,57 @@
 'use strict';
 
 module.exports = require('yargs')
-    .usage('Usage: $0 <endpoints> [options]')
-    .command('endpoints', 'spaced list of hue endpoints')
-    .example('$0 rules schedules scenes -b 192.168.86.131 -u WcuMpsK4g34fG3S')
-    .alias('u', 'user')
-    .alias('b', 'bridge')
-    .alias('d', 'debug')
+
+    .usage('Usage: $0 <cmd> [options]')
+    .example('$0 backup -e rules schedules scenes -b 192.168.86.131 -u WcuMpsK4g34fG3S')
+    
     .alias('h', 'help')
-    .nargs('u', 1)
-    .nargs('b', 1)
-    .nargs('d', 0)
-    .describe('u', 'Hue bridge user')
-    .describe('b', 'Hue bridge address')
-    .describe('d', 'Enable debug logging')
-    .boolean('debug')
-    .string('user')
-    .string('bridge')
-    .demandCommand(1)
-    .help('h')
-    .epilog('Copyright 2018 <kylemharding@gmail.com>')
+    .alias('v', 'version')
+    
+    .implies('bridge', 'user')
+    
+    .demandCommand(1,1)
+    .command('backup', 'Backup data to a local directory')
+    .command('restore', 'Restore data from a local directory')
+    
+    .option('c', {
+        config: true,
+        description: 'Path to JSON config file',
+        alias: 'config',
+        default: './config.json',
+        nargs: 1
+    })
+    
+    .option('b', {
+        string: true,
+        description: 'Hue bridge address',
+        alias: 'bridge',
+        nargs: 1
+    })
+    
+    .option('u', {
+        string: true,
+        description: 'Hue bridge user',
+        alias: 'user',
+        nargs: 1
+    })
+    
+    .option('d', {
+        string: true,
+        description: 'Backup directory',
+        default: './backups',
+        alias: 'dir',
+        nargs: 1
+    })
+    
+    .option('e', {
+        array: true,
+        description: 'Hue endpoints',
+        default: ['rules', 'schedules', 'scenes'],
+        alias: 'endpoints',
+        choices: ['config','groups','lights','resourcelinks','rules','scenes','schedules','sensors']
+    })
+    
+    .epilog('for more information visit https://github.com/klutchell/hueconf')
+    .strict(true)
     .argv;
