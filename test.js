@@ -62,7 +62,7 @@ function startSim() {
     });
 }
 
-function stopSim(code) {
+function end(code) {
     if (sim.kill) {
         sim.kill();
     }
@@ -72,11 +72,11 @@ function stopSim(code) {
 }
 
 process.on('SIGINT', () => {
-    stopSim(1);
+    end(1);
 });
 
 process.on('exit', () => {
-    stopSim();
+    end();
 });
 
 describe('start simulator', () => {
@@ -89,22 +89,11 @@ describe('start simulator', () => {
     });
 });
 
-describe('stop simulator', () => {
-    it('hue-simulator should stop without error', function (done)  {
-        this.timeout(20000);
-        subscribe('sim', /hue simulator listening/, data => {
-            done();
-        });
-        stopSim();
+describe('#hueconf', function() {
+    it('should return json string', function() {
+        var result = hueconf.get("localhost", "newdeveloper", "config");
+        result.should.have.status(200);
+        result.should.be.json;
     });
 });
 
-// describe('#hueconf', function() {
-//     it('should return json string', function() {
-//         var result = hueconf.get("localhost", "newdeveloper", "config");
-//         result.should.have.status(200);
-//         result.should.be.json;
-//     });
-// });
-
-// stopSim();

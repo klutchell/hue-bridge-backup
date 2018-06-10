@@ -23,14 +23,14 @@ function Bridge(bridge_ip, bridge_user) {
  * @param {object} return function
  * @return {string} json string data
  */
-Bridge.prototype.get = function(endpoint, ret) {
+Bridge.prototype.get = function(endpoint, fn) {
     
     var endpoint_url = "http://" + this.ip + "/api/" + this.user + "/" + endpoint;
     
     console.log("GET " + endpoint_url);
     
 	var req = this.client.get(endpoint_url, function (data, response) {
-        ret(JSON.stringify(data, null, 2));
+        fn(JSON.stringify(data, null, 2));
     });
     
     req.on('requestTimeout', function (req) {
