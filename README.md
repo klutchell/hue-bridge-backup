@@ -1,5 +1,8 @@
 # hueconf
 
+[![Build Status](https://travis-ci.org/klutchell/hueconf.svg?branch=master)](https://travis-ci.org/klutchell/hueconf)
+[![Coverage Status](https://coveralls.io/repos/github/klutchell/hueconf/badge.svg?branch=master)](https://coveralls.io/github/klutchell/hueconf?branch=master)
+
 backup and restore raw Hue bridge configuration
 
 ## Installation
