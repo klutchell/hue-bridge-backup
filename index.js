@@ -12,6 +12,7 @@ var config = {};
 config.bridge = args.bridge;
 config.user = args.user;
 config.endpoints = args.endpoints;
+config.dir = args.dir;
 
 // persist important args to a file
 fs.writeFile(args.config, JSON.stringify(config, null, 2), 'utf8', function (err) {

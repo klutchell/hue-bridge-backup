@@ -4,7 +4,6 @@
   "description": "get/set raw hue bridge configuration endpoints",
   "main": "index.js",
   "dependencies": {
-    "config.json": "0.0.4",
     "node-rest-client": "^3.1.0",
     "yargs": "^11.0.0"
   },

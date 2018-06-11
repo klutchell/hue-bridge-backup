@@ -16,7 +16,7 @@ const simSubscriptions = {};
 const simBuffer = [];
 
 const hueCmd = path.join(__dirname, '/index.js');
-const hueArgs = ['backup', '--user', 'newdeveloper', '--bridge', '127.0.0.1'];
+const hueArgs = ['backup', '--user', 'newdeveloper', '--bridge', '127.0.0.1', '-d', 'test'];
 let hue;
 let huePipeOut;
 let huePipeErr;
