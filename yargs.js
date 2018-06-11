@@ -4,8 +4,9 @@
 
 module.exports = require('yargs')
 
-    .usage('Usage: node $0 <cmd> [options]')
-    .example('node $0 backup -e rules schedules scenes -b 192.168.86.131 -u <uuid>')
+    .usage('Usage: $0 <cmd> [options]')
+    .example('$0 backup -b "192.168.86.131" -u <uuid> -d ./my-backup -e rules scenes')
+    .example('$0 restore -d ./my-backup')
     
     .alias('h', 'help')
     .alias('v', 'version')

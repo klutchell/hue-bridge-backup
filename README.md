@@ -20,18 +20,26 @@ npm install @klutchell/hueconf
 ## Usage
 
 ```bash
-# check usage
-node index.js --help
+$ index.js --help
 
-# backup example
-node index.js backup -b "192.168.86.131" -u <uuid> -d ./my-backup -e rules scenes
-# or
-npm run backup -- -b "192.168.86.131" -u <uuid> -d ./my-backup -e rules scenes
+Commands:
+  index.js backup   Backup data to a local directory
+  index.js restore  Restore data from a local directory
 
-# restore example
-node index.js restore -d ./my-backup
-# or
-npm run restore -- -d ./my-backup
+Options:
+  -c, --config     Path to JSON config file           [default: "./config.json"]
+  -b, --bridge     Hue bridge address                                   [string]
+  -u, --user       Hue bridge user                                      [string]
+  -d, --dir        Backup directory                                     [string]
+  -e, --endpoints  Hue endpoints
+       [array] [choices: "config", "groups", "lights", "resourcelinks", "rules",
+     "scenes", "schedules", "sensors"] [default: ["rules","schedules","scenes"]]
+  -h, --help       Show help                                           [boolean]
+  -v, --version    Show version number                                 [boolean]
+
+Examples:
+  index.js backup -b "192.168.86.131" -u <uuid> -d ./my-backup -e rules scenes
+  index.js restore -d ./my-backup
 ```
 
 ## Tests
