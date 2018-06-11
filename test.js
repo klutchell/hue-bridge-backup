@@ -8,7 +8,7 @@ const path = require('path');
 const streamSplitter = require('stream-splitter');
 
 const simCmd = path.join(__dirname, '/node_modules/.bin/hue-simulator');
-const simArgs = ['--hostname=127.0.0.1'];
+const simArgs = ['--hostname=0.0.0.0', '--port=9000'];
 let sim;
 let simPipeOut;
 let simPipeErr;
@@ -16,7 +16,7 @@ const simSubscriptions = {};
 const simBuffer = [];
 
 const hueCmd = path.join(__dirname, '/index.js');
-const hueArgs = ['--user', 'newdeveloper', '--bridge', '127.0.0.1', '-d', './devtest'];
+const hueArgs = ['--user', 'newdeveloper', '--bridge', '0.0.0.0:9000', '-d', './devtest'];
 let hue;
 let huePipeOut;
 let huePipeErr;
