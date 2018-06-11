@@ -13,13 +13,14 @@
     "hue-simulator": "0.0.11",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
     "stream-splitter": "^0.3.2"
   },
   "scripts": {
     "backup": "node index.js backup",
     "restore": "node index.js restore",
-    "test": "mocha --reporter spec --exit",
-    "cover": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec --exit"
+    "test": "nyc mocha --exit",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
