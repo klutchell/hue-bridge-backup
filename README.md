@@ -8,9 +8,18 @@ backup and restore raw Hue bridge configuration
 
 ## Usage
 
+    # check usage
     node index.js --help
-    node index.js backup -b 192.168.86.131 -u <uuid> -d ./my-backup
-    node index.js restore -d ./my-backup
+    
+    # backup example
+    node index.js backup -b 192.168.86.131 -u <uuid> -d ./my-backup -e rules scenes
+    # or
+    npm run backup -- -b 192.168.86.131 -u <uuid> -d ./my-backup
+    
+    # restore example
+    node index.js restore -d ./my-backup -e rules scenes
+    # or
+    npm run restore -- -d ./my-backup
 
 ## Tests
 
