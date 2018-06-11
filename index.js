@@ -12,7 +12,7 @@ var config = {};
 config.bridge = args.bridge;
 config.user = args.user;
 config.endpoints = args.endpoints;
-config.dir = args.dir;
+config.dir = args.dir || "./" + args.user;
 
 // persist important args to a file
 fs.writeFile(args.config, JSON.stringify(config, null, 2), 'utf8', function (err) {
@@ -20,7 +20,7 @@ fs.writeFile(args.config, JSON.stringify(config, null, 2), 'utf8', function (err
 });
 
 // init a hue bridge instance
-var hue_bridge = new Bridge(args.bridge, args.user);
+var hue_bridge = new Bridge(config.bridge, config.user);
 
 /**
  * backup data to a local directory
@@ -65,4 +65,4 @@ function restore(indir, arr) {
 }
 
 // backup only for now
-backup(args.dir, args.endpoints);
+backup(config.dir, config.endpoints);

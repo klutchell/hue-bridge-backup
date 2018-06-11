@@ -4,8 +4,8 @@
 
 module.exports = require('yargs')
 
-    .usage('Usage: $0 <cmd> [options]')
-    .example('$0 backup -e rules schedules scenes -b 192.168.86.131 -u WcuMpsK4g34fG3S')
+    .usage('Usage: node $0 <cmd> [options]')
+    .example('node $0 backup -e rules schedules scenes -b 192.168.86.131 -u <uuid>')
     
     .alias('h', 'help')
     .alias('v', 'version')
@@ -41,7 +41,7 @@ module.exports = require('yargs')
     .option('d', {
         string: true,
         description: 'Backup directory',
-        default: './backups',
+        // default: './backups',
         alias: 'dir',
         nargs: 1
     })
