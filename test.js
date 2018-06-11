@@ -16,7 +16,7 @@ const simSubscriptions = {};
 const simBuffer = [];
 
 const hueCmd = path.join(__dirname, '/index.js');
-const hueArgs = ['backup', '--user', 'newdeveloper', '--bridge', '127.0.0.1', '-d', 'test'];
+const hueArgs = ['--user', 'newdeveloper', '--bridge', '127.0.0.1', '-d', './devtest'];
 let hue;
 let huePipeOut;
 let huePipeErr;
@@ -69,20 +69,6 @@ function matchSubscriptions(type, data) {
     });
 }
 
-function startHue() {
-    hue = cp.spawn(hueCmd, hueArgs);
-    huePipeOut = hue.stdout.pipe(streamSplitter('\n'));
-    huePipeErr = hue.stderr.pipe(streamSplitter('\n'));
-    huePipeOut.on('token', data => {
-        console.log('hue', data.toString());
-        matchSubscriptions('hue', data.toString());
-    });
-    huePipeErr.on('token', data => {
-        console.log('hue', data.toString());
-        matchSubscriptions('hue', data.toString());
-    });
-}
-
 function startSim() {
     sim = cp.spawn(simCmd, simArgs);
     simPipeOut = sim.stdout.pipe(streamSplitter('\n'));
@@ -94,6 +80,21 @@ function startSim() {
     simPipeErr.on('token', data => {
         console.log('sim', data.toString());
         matchSubscriptions('sim', data.toString());
+    });
+}
+
+function runBackup(extra_args = []) {
+    var args = ['backup'].concat(hueArgs, extra_args);
+    hue = cp.spawn(hueCmd, args);
+    huePipeOut = hue.stdout.pipe(streamSplitter('\n'));
+    huePipeErr = hue.stderr.pipe(streamSplitter('\n'));
+    huePipeOut.on('token', data => {
+        console.log('hue', data.toString());
+        matchSubscriptions('hue', data.toString());
+    });
+    huePipeErr.on('token', data => {
+        console.log('hue', data.toString());
+        matchSubscriptions('hue', data.toString());
     });
 }
 
@@ -129,11 +130,25 @@ describe('start hue-simulator', () => {
 });
 
 describe('run hueconf backup', () => {
-    it('hueconf should run without error', function (done) {
+    it('hueconf should backup rules to ./devtest/rules.json', function (done) {
         this.timeout(20000);
-        subscribe('hue', /saved to .\/backups\/rules.json/, data => {
+        subscribe('hue', /saved to .\/devtest\/rules.json/, data => {
             done();
         });
-        startHue();
+        runBackup(["-e", "rules"]);
+    });
+    it('hueconf should backup scenes to ./devtest/scenes.json', function (done) {
+        this.timeout(20000);
+        subscribe('hue', /saved to .\/devtest\/scenes.json/, data => {
+            done();
+        });
+        runBackup(["-e", "scenes"]);
+    });
+    it('hueconf should backup schedules to ./devtest/schedules.json', function (done) {
+        this.timeout(20000);
+        subscribe('hue', /saved to .\/devtest\/schedules.json/, data => {
+            done();
+        });
+        runBackup(["-e", "schedules"]);
     });
 });

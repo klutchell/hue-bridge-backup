@@ -16,7 +16,7 @@
   "scripts": {
     "backup": "node index.js backup",
     "restore": "node index.js restore",
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec --exit"
   },
   "repository": {
     "type": "git",
