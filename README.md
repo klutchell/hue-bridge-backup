@@ -13,43 +13,37 @@ current configuration and automatically restore lights and groups.
 
 ## Installation
 
-```bash
-npm install @klutchell/hueconf
-```
+    npm install @klutchell/hueconf
 
 ## Usage
 
-```bash
-$ index.js --help
+    $ index.js --help
 
-Commands:
-  index.js backup   Backup data to a local directory
-  index.js restore  Restore data from a local directory
-
-Options:
-  -c, --config     Path to JSON config file           [default: "./config.json"]
-  -b, --bridge     Hue bridge address                                   [string]
-  -u, --user       Hue bridge user                                      [string]
-  -d, --dir        Backup directory                                     [string]
-  -e, --endpoints  Hue endpoints
-       [array] [choices: "config", "groups", "lights", "resourcelinks", "rules",
-     "scenes", "schedules", "sensors"] [default: ["rules","schedules","scenes"]]
-  -h, --help       Show help                                           [boolean]
-  -v, --version    Show version number                                 [boolean]
-
-Examples:
-  index.js backup -b "192.168.86.131" -u <uuid> -d ./my-backup -e rules scenes
-  index.js restore -d ./my-backup
-```
+    Commands:
+      index.js backup   Backup data to a local directory
+      index.js restore  Restore data from a local directory
+    
+    Options:
+      -c, --config     Path to JSON config file           [default: "./config.json"]
+      -b, --bridge     Hue bridge address                                   [string]
+      -u, --user       Hue bridge user                                      [string]
+      -d, --dir        Backup directory                                     [string]
+      -e, --endpoints  Hue endpoints
+           [array] [choices: "config", "groups", "lights", "resourcelinks", "rules",
+         "scenes", "schedules", "sensors"] [default: ["rules","schedules","scenes"]]
+      -h, --help       Show help                                           [boolean]
+      -v, --version    Show version number                                 [boolean]
+    
+    Examples:
+      index.js backup -b "192.168.86.131" -u <uuid> -d ./my-backup -e rules scenes
+      index.js restore -d ./my-backup
 
 ## Tests
 
 [![Build Status](https://travis-ci.org/klutchell/hueconf.svg?branch=master)](https://travis-ci.org/klutchell/hueconf)
 [![Coverage Status](https://coveralls.io/repos/github/klutchell/hueconf/badge.svg?branch=master)](https://coveralls.io/github/klutchell/hueconf?branch=master)
 
-```bash
-npm test
-```
+    npm test
 
 ## Contributing
 
