@@ -4,7 +4,9 @@
 
 const cp = require('child_process');
 const path = require('path');
-// const expect = require('chai').expect;
+const chai = require('chai');
+chai.use(require('chai-json'));
+const expect = chai.expect;
 const streamSplitter = require('stream-splitter');
 
 const simCmd = path.join(__dirname, '/node_modules/.bin/hue-simulator');
@@ -130,25 +132,39 @@ describe('start hue-simulator', () => {
 });
 
 describe('run hueconf backup', () => {
-    it('hueconf should backup rules to ./devtest/rules.json', function (done) {
+    it('hueconf should backup rules without error', function (done) {
         this.timeout(20000);
         subscribe('hue', /saved to .\/devtest\/rules.json/, data => {
             done();
         });
         runBackup(["-e", "rules"]);
     });
-    it('hueconf should backup scenes to ./devtest/scenes.json', function (done) {
+    it('./devtest/rules.json should be a json file', function() {
+        var result = "./devtest/rules.json";
+        expect(result).to.be.a.jsonFile();
+    });
+    
+    it('hueconf should backup scenes without error', function (done) {
         this.timeout(20000);
         subscribe('hue', /saved to .\/devtest\/scenes.json/, data => {
             done();
         });
         runBackup(["-e", "scenes"]);
     });
-    it('hueconf should backup schedules to ./devtest/schedules.json', function (done) {
+    it('./devtest/scenes.json should be a json file', function() {
+        var result = "./devtest/scenes.json";
+        expect(result).to.be.a.jsonFile();
+    });
+    
+    it('hueconf should backup schedules without error', function (done) {
         this.timeout(20000);
         subscribe('hue', /saved to .\/devtest\/schedules.json/, data => {
             done();
         });
         runBackup(["-e", "schedules"]);
+    });
+    it('./devtest/schedules.json should be a json file', function() {
+        var result = "./devtest/schedules.json";
+        expect(result).to.be.a.jsonFile();
     });
 });
