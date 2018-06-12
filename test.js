@@ -167,4 +167,20 @@ describe('run hueconf backup', () => {
         var result = "./devtest/schedules.json";
         expect(result).to.be.a.jsonFile();
     });
+    
+    it('hueconf should exit when provided a bad endpoint string', function (done) {
+        this.timeout(20000);
+        subscribe('hue', /Invalid values/, data => {
+            done();
+        });
+        runBackup(["-e", "fake"]);
+    });
+    
+    it('hueconf should exit when provided a bad endpoint number', function (done) {
+        this.timeout(20000);
+        subscribe('hue', /Invalid values/, data => {
+            done();
+        });
+        runBackup(["-e", 99]);
+    });
 });

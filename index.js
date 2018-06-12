@@ -2,20 +2,20 @@
 
 'use strict';
 
-const args = require('./yargs.js');
+const argv = require('./yargs.js');
 const Bridge = require('./bridge.js');
 const fs = require('fs');
 
 const valid_endpoints = [ "config", "groups", "lights", "resourcelinks", "rules", "scenes", "schedules", "sensors" ];
 
 var config = {};
-config.bridge = args.bridge;
-config.user = args.user;
-config.endpoints = args.endpoints;
-config.dir = args.dir || "./" + args.user;
+config.bridge = argv.bridge;
+config.user = argv.user;
+config.endpoints = argv.endpoints;
+config.dir = argv.dir || "./" + argv.user;
 
 // persist important args to a file
-fs.writeFile(args.config, JSON.stringify(config, null, 2), 'utf8', function (err) {
+fs.writeFile(argv.config, JSON.stringify(config, null, 2), 'utf8', function (err) {
     if (err) { return console.log(err); }
 });
 
@@ -27,7 +27,7 @@ var hue_bridge = new Bridge(config.bridge, config.user);
  * @param {string} backup directory
  * @param {array} hue endpoints
  */
-function backup(dir, arr) {
+module.exports.backup = function(dir, arr) {
     
     // for each provided endpoint
     arr.forEach(function(endpoint){
@@ -58,11 +58,11 @@ function backup(dir, arr) {
             });
         });
     });
-}
+};
 
-function restore(indir, arr) {
+module.exports.restore = function(indir, arr) {
     // TODO
-}
+    console.log('not implimented yet!');
+};
 
-// backup only for now
-backup(config.dir, config.endpoints);
+this[argv._[0]](config.dir, config.endpoints);
