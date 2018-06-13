@@ -19,20 +19,22 @@ current configuration and automatically restore lights and groups.
 
     $ index.js --help
 
+    Usage: index.js <cmd> [options]
+    
     Commands:
       index.js backup   Backup data to a local directory
       index.js restore  Restore data from a local directory
     
     Options:
-      -c, --config     Path to JSON config file           [default: "./config.json"]
-      -b, --bridge     Hue bridge address                                   [string]
-      -u, --user       Hue bridge user                                      [string]
-      -d, --dir        Backup directory                                     [string]
-      -e, --endpoints  Hue endpoints
+      -c, --config_file  Path to JSON config file
+      -b, --bridge_ip    Hue bridge ip address                              [string]
+      -u, --bridge_user  Hue bridge user                                    [string]
+      -d, --backup_dir   Path to Hue backup directory                       [string]
+      -e, --endpoints    Hue endpoints list
            [array] [choices: "config", "groups", "lights", "resourcelinks", "rules",
          "scenes", "schedules", "sensors"] [default: ["rules","schedules","scenes"]]
-      -h, --help       Show help                                           [boolean]
-      -v, --version    Show version number                                 [boolean]
+      -h, --help         Show help                                         [boolean]
+      -v, --version      Show version number                               [boolean]
     
     Examples:
       index.js backup -b "192.168.86.131" -u <uuid> -d ./my-backup -e rules scenes
