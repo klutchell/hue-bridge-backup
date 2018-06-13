@@ -20,36 +20,34 @@ module.exports = require('yargs')
     .option('c', {
         config: true,
         description: 'Path to JSON config file',
-        alias: 'config',
-        default: './config.json',
+        alias: 'config_file',
         nargs: 1
     })
     
     .option('b', {
         string: true,
-        description: 'Hue bridge address',
-        alias: 'bridge',
+        description: 'Hue bridge ip address',
+        alias: 'bridge_ip',
         nargs: 1
     })
     
     .option('u', {
         string: true,
         description: 'Hue bridge user',
-        alias: 'user',
+        alias: 'bridge_user',
         nargs: 1
     })
     
     .option('d', {
         string: true,
-        description: 'Backup directory',
-        // default: './backups',
-        alias: 'dir',
+        description: 'Path to Hue backup directory',
+        alias: 'backup_dir',
         nargs: 1
     })
     
     .option('e', {
         array: true,
-        description: 'Hue endpoints',
+        description: 'Hue endpoints list',
         default: ['rules', 'schedules', 'scenes'],
         alias: 'endpoints',
         choices: ['config','groups','lights','resourcelinks','rules','scenes','schedules','sensors']

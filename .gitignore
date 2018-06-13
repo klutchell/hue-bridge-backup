@@ -1,6 +1,7 @@
 # Custom
 */
 config.json
+!test/
 
 # Logs
 logs

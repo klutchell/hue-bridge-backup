@@ -5,7 +5,7 @@
 const Client = require('node-rest-client').Client;
 
 /**
- * init bridge object
+ * init bridge instance
  * @param {string} bridge ip
  * @param {string} bridge user
  * @return {object} bridge object

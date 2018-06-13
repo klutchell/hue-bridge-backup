@@ -6,21 +6,21 @@ const argv = require('./yargs.js');
 const Bridge = require('./bridge.js');
 const fs = require('fs');
 
-const valid_endpoints = [ "config", "groups", "lights", "resourcelinks", "rules", "scenes", "schedules", "sensors" ];
+// const valid_endpoints = [ "config", "groups", "lights", "resourcelinks", "rules", "scenes", "schedules", "sensors" ];
 
 var config = {};
-config.bridge = argv.bridge;
-config.user = argv.user;
+config.bridge_ip = argv.bridge_ip;
+config.bridge_user = argv.bridge_user;
 config.endpoints = argv.endpoints;
-config.dir = argv.dir || "./" + argv.user;
+config.backup_dir = argv.backup_dir || "./" + argv.bridge_user;
 
 // persist important args to a file
-fs.writeFile(argv.config, JSON.stringify(config, null, 2), 'utf8', function (err) {
-    if (err) { return console.log(err); }
-});
+// fs.writeFile(argv.config, JSON.stringify(config, null, 2), 'utf8', function (err) {
+//     if (err) { return console.log(err); }
+// });
 
 // init a hue bridge instance
-var hue_bridge = new Bridge(config.bridge, config.user);
+var hue_bridge = new Bridge(config.bridge_ip, config.bridge_user);
 
 /**
  * backup data to a local directory
@@ -32,11 +32,11 @@ module.exports.backup = function(dir, arr) {
     // for each provided endpoint
     arr.forEach(function(endpoint){
         
-        // check against value endpoints
-        if (!valid_endpoints.includes(endpoint)) {
-            console.log(endpoint + " is not a valid endpoint");
-            return;
-        }
+        // check against valid endpoints
+        // if (!valid_endpoints.includes(endpoint)) {
+        //     console.log(endpoint + " is not a valid endpoint");
+        //     return;
+        // }
         
         // write to a file <backupdir>/<endpoint>.json
         var outfile = dir + "/" + endpoint + ".json";
@@ -60,9 +60,9 @@ module.exports.backup = function(dir, arr) {
     });
 };
 
-module.exports.restore = function(indir, arr) {
+module.exports.restore = function(dir, arr) {
     // TODO
     console.log('not implimented yet!');
 };
 
-this[argv._[0]](config.dir, config.endpoints);
+this[argv._[0]](config.backup_dir, config.endpoints);

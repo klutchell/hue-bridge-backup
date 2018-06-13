@@ -8,17 +8,22 @@ const chai = require('chai');
 chai.use(require('chai-json'));
 const expect = chai.expect;
 const streamSplitter = require('stream-splitter');
+const del = require('del');
 
-const simCmd = path.join(__dirname, '/node_modules/.bin/hue-simulator');
-const simArgs = ['--hostname=0.0.0.0', '--port=9000'];
+const sim_host = '0.0.0.0';
+const sim_port = '9000';
+const sim_user = 'newdeveloper';
+const sim_cmd = path.join(__dirname, '../node_modules/.bin/hue-simulator');
+const sim_args = ['--hostname=' + sim_host, '--port=' + sim_port];
+
 let sim;
 let simPipeOut;
 let simPipeErr;
 const simSubscriptions = {};
 const simBuffer = [];
 
-const hueCmd = path.join(__dirname, '/index.js');
-const hueArgs = ['--user', 'newdeveloper', '--bridge', '0.0.0.0:9000', '-d', './devtest'];
+const hue_cmd = path.join(__dirname, '../index.js');    // relative to test.js
+const hue_args = [];
 let hue;
 let huePipeOut;
 let huePipeErr;
@@ -72,7 +77,7 @@ function matchSubscriptions(type, data) {
 }
 
 function startSim() {
-    sim = cp.spawn(simCmd, simArgs);
+    sim = cp.spawn(sim_cmd, sim_args);
     simPipeOut = sim.stdout.pipe(streamSplitter('\n'));
     simPipeErr = sim.stderr.pipe(streamSplitter('\n'));
     simPipeOut.on('token', data => {
@@ -86,8 +91,8 @@ function startSim() {
 }
 
 function runBackup(extra_args = []) {
-    var args = ['backup'].concat(hueArgs, extra_args);
-    hue = cp.spawn(hueCmd, args);
+    var args = ['backup'].concat(hue_args, extra_args);
+    hue = cp.spawn(hue_cmd, args);
     huePipeOut = hue.stdout.pipe(streamSplitter('\n'));
     huePipeErr = hue.stderr.pipe(streamSplitter('\n'));
     huePipeOut.on('token', data => {
@@ -98,6 +103,7 @@ function runBackup(extra_args = []) {
         console.log('hue', data.toString());
         matchSubscriptions('hue', data.toString());
     });
+    
 }
 
 function end(code) {
@@ -127,60 +133,72 @@ describe('start hue-simulator', () => {
             done();
         });
         startSim();
-
     });
 });
 
-describe('run hue-bridge-backup backup', () => {
-    it('hue-bridge-backup should backup rules without error', function (done) {
+describe('run backup', () => {
+    
+    it('should backup rules without error', function (done) {
         this.timeout(20000);
-        subscribe('hue', /saved to .\/devtest\/rules.json/, data => {
+        subscribe('hue', /saved to .\/newdeveloper\/rules.json/, data => {
             done();
         });
-        runBackup(["-e", "rules"]);
+        runBackup(['-u', sim_user, '-b', sim_host + ':' + sim_port, "-e", "rules"]);
     });
-    it('./devtest/rules.json should be a json file', function() {
-        var result = "./devtest/rules.json";
+    it('./newdeveloper/rules.json should be a json file', function() {
+        var result = "./newdeveloper/rules.json";
         expect(result).to.be.a.jsonFile();
     });
     
-    it('hue-bridge-backup should backup scenes without error', function (done) {
+    it('should backup scenes without error', function (done) {
         this.timeout(20000);
-        subscribe('hue', /saved to .\/devtest\/scenes.json/, data => {
+        subscribe('hue', /saved to .\/newdeveloper\/scenes.json/, data => {
             done();
         });
-        runBackup(["-e", "scenes"]);
+        runBackup(['-u', sim_user, '-b', sim_host + ':' + sim_port, "-e", "scenes"]);
     });
-    it('./devtest/scenes.json should be a json file', function() {
-        var result = "./devtest/scenes.json";
+    it('./newdeveloper/scenes.json should be a json file', function() {
+        var result = "./newdeveloper/scenes.json";
         expect(result).to.be.a.jsonFile();
     });
     
-    it('hue-bridge-backup should backup schedules without error', function (done) {
+    it('should backup schedules without error', function (done) {
         this.timeout(20000);
-        subscribe('hue', /saved to .\/devtest\/schedules.json/, data => {
+        subscribe('hue', /saved to .\/newdeveloper\/schedules.json/, data => {
             done();
         });
-        runBackup(["-e", "schedules"]);
+        runBackup(['-u', sim_user, '-b', sim_host + ':' + sim_port, "-e", "schedules"]);
     });
-    it('./devtest/schedules.json should be a json file', function() {
-        var result = "./devtest/schedules.json";
+    it('./newdeveloper/schedules.json should be a json file', function() {
+        var result = "./newdeveloper/schedules.json";
         expect(result).to.be.a.jsonFile();
     });
     
-    it('hue-bridge-backup should exit when provided a bad endpoint string', function (done) {
+    it('should print error when provided a bad endpoint', function (done) {
         this.timeout(20000);
         subscribe('hue', /Invalid values/, data => {
             done();
         });
-        runBackup(["-e", "fake"]);
+        runBackup(['-u', sim_user, '-b', sim_host + ':' + sim_port, "-e", "badendpoint"]);
     });
     
-    it('hue-bridge-backup should exit when provided a bad endpoint number', function (done) {
-        this.timeout(20000);
-        subscribe('hue', /Invalid values/, data => {
+    it('should print error when provided a bad host', function (done) {
+        this.timeout(200000);
+        subscribe('hue', /ETIMEDOUT/, data => {
             done();
         });
-        runBackup(["-e", 99]);
+        runBackup(['-u', sim_user, '-b', '99.99.99.99' + ':' + sim_port, "-e", "rules"]);
+    });
+    
+    it('should print error when provided a bad port', function (done) {
+        this.timeout(20000);
+        subscribe('hue', /ECONNREFUSED/, data => {
+            done();
+        });
+        runBackup(['-u', sim_user, '-b', sim_host + ':' + '55555', '-e', 'rules']);
+    });
+    
+    after('cleanup', function() {
+        del.sync(path.join(__dirname, '../newdeveloper'));
     });
 });
