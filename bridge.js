@@ -11,7 +11,6 @@ const Client = require('node-rest-client').Client;
  * @return {object} bridge object
  */
 function Bridge(bridge_ip, bridge_user) {
-    this.client = new Client();
     this.ip = bridge_ip;
     this.user = bridge_user;
     // console.log(this);
@@ -27,25 +26,16 @@ Bridge.prototype.get = function(endpoint, fn) {
     
     var endpoint_url = "http://" + this.ip + "/api/" + this.user + "/" + endpoint;
     
+    var client = new Client();
+    
     console.log("GET " + endpoint_url);
     
-	var req = this.client.get(endpoint_url, function (data, response) {
+	var req = client.get(endpoint_url, function (data, response) {
         fn(JSON.stringify(data, null, 2));
-    });
-    
-    req.on('requestTimeout', function (req) {
-        console.log('request has expired');
-        req.abort();
-    });
-     
-    req.on('responseTimeout', function (res) {
-        console.log('response has expired');
-        req.abort();
     });
      
     req.on('error', function (err) {
         console.log('request error', err);
-        // req.abort();
     });
 };
 
