@@ -1,4 +1,4 @@
-# hueconf
+# hue-bridge-backup
 
 Backup and restore [Philips Hue](https://www.developers.meethue.com/) bridge
 configuration in raw JSON for easy editing.
@@ -13,7 +13,7 @@ current configuration and automatically restore lights and groups.
 
 ## Installation
 
-    npm install @klutchell/hueconf
+    npm install @klutchell/hue-bridge-backup
 
 ## Usage
 
@@ -40,8 +40,8 @@ current configuration and automatically restore lights and groups.
 
 ## Tests
 
-[![Build Status](https://travis-ci.org/klutchell/hueconf.svg?branch=master)](https://travis-ci.org/klutchell/hueconf)
-[![Coverage Status](https://coveralls.io/repos/github/klutchell/hueconf/badge.svg?branch=master)](https://coveralls.io/github/klutchell/hueconf?branch=master)
+[![Build Status](https://travis-ci.org/klutchell/hue-bridge-backup.svg?branch=master)](https://travis-ci.org/klutchell/hue-bridge-backup)
+[![Coverage Status](https://coveralls.io/repos/github/klutchell/hue-bridge-backup/badge.svg?branch=master)](https://coveralls.io/github/klutchell/hue-bridge-backup?branch=master)
 
     npm test
 

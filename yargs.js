@@ -55,6 +55,6 @@ module.exports = require('yargs')
         choices: ['config','groups','lights','resourcelinks','rules','scenes','schedules','sensors']
     })
     
-    .epilog('for more information visit https://github.com/klutchell/hueconf')
+    .epilog('for more information visit https://github.com/klutchell/hue-bridge-backup')
     .strict(true)
     .argv;

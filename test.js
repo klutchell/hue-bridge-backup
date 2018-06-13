@@ -131,8 +131,8 @@ describe('start hue-simulator', () => {
     });
 });
 
-describe('run hueconf backup', () => {
-    it('hueconf should backup rules without error', function (done) {
+describe('run hue-bridge-backup backup', () => {
+    it('hue-bridge-backup should backup rules without error', function (done) {
         this.timeout(20000);
         subscribe('hue', /saved to .\/devtest\/rules.json/, data => {
             done();
@@ -144,7 +144,7 @@ describe('run hueconf backup', () => {
         expect(result).to.be.a.jsonFile();
     });
     
-    it('hueconf should backup scenes without error', function (done) {
+    it('hue-bridge-backup should backup scenes without error', function (done) {
         this.timeout(20000);
         subscribe('hue', /saved to .\/devtest\/scenes.json/, data => {
             done();
@@ -156,7 +156,7 @@ describe('run hueconf backup', () => {
         expect(result).to.be.a.jsonFile();
     });
     
-    it('hueconf should backup schedules without error', function (done) {
+    it('hue-bridge-backup should backup schedules without error', function (done) {
         this.timeout(20000);
         subscribe('hue', /saved to .\/devtest\/schedules.json/, data => {
             done();
@@ -168,7 +168,7 @@ describe('run hueconf backup', () => {
         expect(result).to.be.a.jsonFile();
     });
     
-    it('hueconf should exit when provided a bad endpoint string', function (done) {
+    it('hue-bridge-backup should exit when provided a bad endpoint string', function (done) {
         this.timeout(20000);
         subscribe('hue', /Invalid values/, data => {
             done();
@@ -176,7 +176,7 @@ describe('run hueconf backup', () => {
         runBackup(["-e", "fake"]);
     });
     
-    it('hueconf should exit when provided a bad endpoint number', function (done) {
+    it('hue-bridge-backup should exit when provided a bad endpoint number', function (done) {
         this.timeout(20000);
         subscribe('hue', /Invalid values/, data => {
             done();

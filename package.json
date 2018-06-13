@@ -1,7 +1,7 @@
 {
-  "name": "hueconf",
+  "name": "hue-bridge-backup",
   "version": "0.1.0",
-  "description": "get/set raw hue bridge configuration endpoints",
+  "description": "Backup and restore Philips Hue bridge configuration in raw JSON",
   "main": "index.js",
   "dependencies": {
     "node-rest-client": "^3.1.0",
@@ -25,18 +25,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/klutchell/hueconf.git"
+    "url": "git+https://github.com/klutchell/hue-bridge-backup.git"
   },
   "keywords": [
     "signify",
     "smarthome",
     "hue",
+    "backup",
+    "restore",
     "philips"
   ],
   "author": "Kyle Harding <kylemharding@gmail.com> (https://github.com/klutchell)",
-  "license": "MIT",
+  "license": "GLWTPL",
   "bugs": {
-    "url": "https://github.com/klutchell/hueconf/issues"
+    "url": "https://github.com/klutchell/hue-bridge-backup/issues"
   },
-  "homepage": "https://github.com/klutchell/hueconf#readme"
+  "homepage": "https://github.com/klutchell/hue-bridge-backup#readme"
 }
