@@ -5,16 +5,14 @@
 const cp = require('child_process');
 const path = require('path');
 const chai = require('chai');
-chai.use(require('chai-json'));
 const expect = chai.expect;
 const streamSplitter = require('stream-splitter');
 const del = require('del');
 
-const sim_host = '0.0.0.0';
-const sim_port = '9000';
-const sim_user = 'newdeveloper';
-const sim_cmd = path.join(__dirname, '../node_modules/.bin/hue-simulator');
-const sim_args = ['--hostname=' + sim_host, '--port=' + sim_port];
+chai.use(require('chai-json'));
+
+const simCmd = path.join(__dirname, '../node_modules/.bin/hue-simulator');
+const simArgs = ['--hostname=0.0.0.0', '--port=9000'];
 
 let sim;
 let simPipeOut;
@@ -22,8 +20,9 @@ let simPipeErr;
 const simSubscriptions = {};
 const simBuffer = [];
 
-const hue_cmd = path.join(__dirname, '../index.js');    // relative to test.js
-const hue_args = [];
+const hueCmd = path.join(__dirname, '../index.js');
+const hueArgs = ['--config-file', 'test/config.json'];
+
 let hue;
 let huePipeOut;
 let huePipeErr;
@@ -77,7 +76,7 @@ function matchSubscriptions(type, data) {
 }
 
 function startSim() {
-    sim = cp.spawn(sim_cmd, sim_args);
+    sim = cp.spawn(simCmd, simArgs);
     simPipeOut = sim.stdout.pipe(streamSplitter('\n'));
     simPipeErr = sim.stderr.pipe(streamSplitter('\n'));
     simPipeOut.on('token', data => {
@@ -91,8 +90,8 @@ function startSim() {
 }
 
 function runBackup(extra_args = []) {
-    var args = ['backup'].concat(hue_args, extra_args);
-    hue = cp.spawn(hue_cmd, args);
+    var args = ['backup'].concat(hueArgs, extra_args);
+    hue = cp.spawn(hueCmd, args);
     huePipeOut = hue.stdout.pipe(streamSplitter('\n'));
     huePipeErr = hue.stderr.pipe(streamSplitter('\n'));
     huePipeOut.on('token', data => {
@@ -103,7 +102,6 @@ function runBackup(extra_args = []) {
         console.log('hue', data.toString());
         matchSubscriptions('hue', data.toString());
     });
-    
 }
 
 function end(code) {
@@ -138,65 +136,44 @@ describe('start hue-simulator', () => {
 
 describe('run backup', () => {
     
-    it('should backup rules without error', function (done) {
+    it('backup provided endpoints without error', function (done) {
         this.timeout(20000);
-        subscribe('hue', /saved to .\/newdeveloper\/rules.json/, data => {
+        subscribe('hue', /saved .\/newdeveloper\/sensors.json/, data => {
             done();
         });
-        runBackup(['-u', sim_user, '-b', sim_host + ':' + sim_port, "-e", "rules"]);
-    });
-    it('./newdeveloper/rules.json should be a json file', function() {
-        var result = "./newdeveloper/rules.json";
-        expect(result).to.be.a.jsonFile();
+        runBackup([]);
     });
     
-    it('should backup scenes without error', function (done) {
-        this.timeout(20000);
-        subscribe('hue', /saved to .\/newdeveloper\/scenes.json/, data => {
-            done();
+    it('expect a json file for each endpoint', function() {
+        ['config','groups','lights','resourcelinks','rules','scenes','schedules','sensors'].forEach(function(endpoint){
+           expect('./newdeveloper/' + endpoint + '.json').to.be.a.jsonFile(); 
         });
-        runBackup(['-u', sim_user, '-b', sim_host + ':' + sim_port, "-e", "scenes"]);
-    });
-    it('./newdeveloper/scenes.json should be a json file', function() {
-        var result = "./newdeveloper/scenes.json";
-        expect(result).to.be.a.jsonFile();
     });
     
-    it('should backup schedules without error', function (done) {
-        this.timeout(20000);
-        subscribe('hue', /saved to .\/newdeveloper\/schedules.json/, data => {
-            done();
-        });
-        runBackup(['-u', sim_user, '-b', sim_host + ':' + sim_port, "-e", "schedules"]);
-    });
-    it('./newdeveloper/schedules.json should be a json file', function() {
-        var result = "./newdeveloper/schedules.json";
-        expect(result).to.be.a.jsonFile();
-    });
-    
-    it('should print error when provided a bad endpoint', function (done) {
+    it('exit and log error when provided a bad endpoint', function (done) {
         this.timeout(20000);
         subscribe('hue', /Invalid values/, data => {
             done();
         });
-        runBackup(['-u', sim_user, '-b', sim_host + ':' + sim_port, "-e", "badendpoint"]);
+        runBackup(['-e', 'badendpoint']);
     });
     
-    it('should print error when provided a bad host', function (done) {
-        this.timeout(200000);
-        subscribe('hue', /ETIMEDOUT/, data => {
-            done();
-        });
-        runBackup(['-u', sim_user, '-b', '99.99.99.99' + ':' + sim_port, "-e", "rules"]);
-    });
-    
-    it('should print error when provided a bad port', function (done) {
+    it('fail and log error when provided a bad port', function (done) {
         this.timeout(20000);
         subscribe('hue', /ECONNREFUSED/, data => {
             done();
         });
-        runBackup(['-u', sim_user, '-b', sim_host + ':' + '55555', '-e', 'rules']);
+        runBackup(['-b', '0.0.0.0:9999', '-e', 'config']);
     });
+
+    // long timeout here    
+    // it('timeout and log error when provided a bad address', function (done) {
+    //     this.timeout(200000);
+    //     subscribe('hue', /ETIMEDOUT/, data => {
+    //         done();
+    //     });
+    //     runBackup(['-b', '99.99.99.99:9000', '-e', 'config']);
+    // });
     
     after('cleanup', function() {
         del.sync(path.join(__dirname, '../newdeveloper'));

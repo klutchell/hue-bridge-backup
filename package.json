@@ -4,7 +4,8 @@
   "description": "Backup and restore Philips Hue bridge configuration in raw JSON",
   "main": "index.js",
   "dependencies": {
-    "node-rest-client": "^3.1.0",
+    "nano-fs": "^1.2.4",
+    "node-fetch": "^2.1.2",
     "yargs": "^11.0.0"
   },
   "devDependencies": {
@@ -37,7 +38,7 @@
     "philips"
   ],
   "author": "Kyle Harding <kylemharding@gmail.com> (https://github.com/klutchell)",
-  "license": "GLWTPL",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/klutchell/hue-bridge-backup/issues"
   },

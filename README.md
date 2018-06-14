@@ -68,4 +68,4 @@ _tbd_
 
 ## License
 
-This project is licensed under [GLWTPL](./LICENSE)
+This project is licensed under [MIT](./LICENSE)
