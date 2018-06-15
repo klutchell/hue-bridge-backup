@@ -175,7 +175,7 @@ describe('run backup', () => {
     //     runBackup(['-b', '99.99.99.99:9000', '-e', 'config']);
     // });
     
-    // after('cleanup', function() {
-    //     del.sync(path.join(__dirname, '../newdeveloper'));
-    // });
+    after('cleanup', function() {
+        del.sync(path.join(__dirname, '../newdeveloper'));
+    });
 });
