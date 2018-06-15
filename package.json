@@ -4,8 +4,7 @@
   "description": "Backup and restore Philips Hue bridge configuration in raw JSON",
   "main": "index.js",
   "dependencies": {
-    "nano-fs": "^1.2.4",
-    "node-fetch": "^2.1.2",
+    "request": "^2.87.0",
     "yargs": "^11.0.0"
   },
   "devDependencies": {

@@ -3,8 +3,8 @@
 'use strict';
 
 const argv = require('./yargs.js');
-const fs = require('nano-fs');
-const fetch = require("node-fetch");
+const fs = require('fs');
+const request = require('request');
 
 var config = {};
 config.bridgeIp = argv.bridgeIp;
@@ -17,36 +17,38 @@ config.backupDir = argv.backupDir || "./" + argv.bridgeUser;
  * @param {string} backup directory
  * @param {array} hue endpoints
  */
-module.exports.backup = function(outdir, endpoints) {
+module.exports.backup = function(backupDir, endpoints) {
     
-    const getEndpoint = async (endpoint) => {
+    const getEndpoint = (endpoint) => {
         
-        const outfile = outdir + '/' + endpoint + '.json';
-        const url = "http://" + config.bridgeIp + "/api/" + config.bridgeUser + "/" + endpoint;
+        const outfile = backupDir + '/' + endpoint + '.json';
+        const url = 'http://' + config.bridgeIp + "/api/" + config.bridgeUser + "/" + endpoint;
         
-        console.log("getting " + url);
-        
-        try {
-            const response = await fetch(url);
-            const json = await response.json();
-            await fs.mkpath(outdir);   // make sure path exists
-            await fs.writeFile(outfile, JSON.stringify(json, null, 2), { encoding: 'utf8' });   // write to file
-        } catch (err) {
-            console.log(err);
+        if (!fs.existsSync(backupDir)) {
+            console.log('creating ' + backupDir);
+            fs.mkdirSync(backupDir);
         }
         
-        console.log('saved ' + outfile);
+        console.log('getting ' + url);
+        request(url, { json: true }, (err, res, body) => {
+            if (err) { return console.log(err); }
+            
+            fs.writeFile(outfile, JSON.stringify(body, null, 2), (err) => {  
+                if (err) throw err;
+                console.log('saved ' + outfile);
+            });
+            
+            index++;
+            if (index >= endpoints.length) return;
+            
+            setTimeout(function(endpoint){
+                getEndpoint(endpoint);
+            }.bind(this, endpoints[index]), 1000);
         
-        index++;
-        
-        if (index >= endpoints.length) return;
-        
-        setTimeout(function(endpoint){
-            getEndpoint(endpoint);
-        }.bind(this, endpoints[index]), 1000);
+        });
     };
     
-    var index = 0;
+    let index = 0;
     getEndpoint(endpoints[index]);
 };
 
