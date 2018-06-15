@@ -1,0 +1,11 @@
+{
+  "bridge-ip": "0.0.0.0:9000",
+  "bridge-user": "newdeveloper",
+  "endpoints": [
+    "config",
+    "groups",
+    "lights",
+    "schedules"
+  ],
+  "backup-dir": "./newdeveloper"
+}
