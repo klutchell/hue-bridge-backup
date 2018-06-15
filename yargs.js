@@ -27,14 +27,16 @@ module.exports = require('yargs')
         string: true,
         description: 'Hue bridge address:port',
         alias: 'bridge-ip',
-        nargs: 1
+        nargs: 1,
+        demandOption: true
     })
     
     .option('u', {
         string: true,
         description: 'Hue bridge user',
         alias: 'bridge-user',
-        nargs: 1
+        nargs: 1,
+        demandOption: true
     })
     
     .option('d', {
@@ -49,7 +51,8 @@ module.exports = require('yargs')
         description: 'Hue endpoints list',
         default: ['rules', 'schedules', 'scenes'],
         alias: 'endpoints',
-        choices: ['config','groups','lights','resourcelinks','rules','scenes','schedules','sensors']
+        choices: ['config','groups','lights','resourcelinks','rules','scenes','schedules','sensors'],
+        demandOption: true
     })
     
     .showHelpOnFail(false, 'Specify --help for available options')

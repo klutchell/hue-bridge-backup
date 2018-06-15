@@ -89,8 +89,8 @@ function startSim() {
     });
 }
 
-function runBackup(extra_args = []) {
-    var args = ['backup'].concat(hueArgs, extra_args);
+function myApp(cmd = 'backup', extra_args = []) {
+    var args = [cmd].concat(hueArgs, extra_args);
     hue = cp.spawn(hueCmd, args);
     huePipeOut = hue.stdout.pipe(streamSplitter('\n'));
     huePipeErr = hue.stderr.pipe(streamSplitter('\n'));
@@ -134,14 +134,14 @@ describe('start hue-simulator', () => {
     });
 });
 
-describe('run backup', () => {
+describe('run backup with config file', () => {
     
-    it('backup provided endpoints without error', function (done) {
+    it('last endpoint saved', function (done) {
         this.timeout(20000);
         subscribe('hue', /saved .\/newdeveloper\/schedules.json/, data => {
             done();
         });
-        runBackup([]);
+        myApp();
     });
     
     it('expect a json file for each endpoint', function() {
@@ -150,32 +150,93 @@ describe('run backup', () => {
         });
     });
     
-    it('exit and log error when provided a bad endpoint', function (done) {
+    after('cleanup', function() {
+        del.sync(path.join(__dirname, '../newdeveloper'));
+    });
+});
+
+describe('run backup with blank backup dir', () => {
+    it('use ./{bridgeUser} as backup dir', function (done) {
         this.timeout(20000);
-        subscribe('hue', /Invalid values/, data => {
+        subscribe('hue', /saved .\/newdeveloper\/schedules.json/, data => {
             done();
         });
-        runBackup(['-e', 'badendpoint']);
+        myApp('backup', ['-d', '']);
     });
     
-    it('fail and log error when provided a bad port', function (done) {
-        this.timeout(20000);
-        subscribe('hue', /ECONNREFUSED/, data => {
-            done();
+    it('expect a json file for each endpoint', function() {
+        ['config','groups','lights','schedules'].forEach(function(endpoint){
+           expect('./newdeveloper/' + endpoint + '.json').to.be.a.jsonFile(); 
         });
-        runBackup(['-b', '0.0.0.0:9999', '-e', 'config']);
-    });
-
-    // long timeout here    
-    it('timeout and log error when provided a bad address', function (done) {
-        this.timeout(200000);
-        subscribe('hue', /ETIMEDOUT/, data => {
-            done();
-        });
-        runBackup(['-b', '99.99.99.99:9000', '-e', 'config']);
     });
     
     after('cleanup', function() {
         del.sync(path.join(__dirname, '../newdeveloper'));
     });
 });
+
+describe('run backup with invalid backup dir', () => {
+    it('log error and exit', function (done) {
+        this.timeout(20000);
+        subscribe('hue', /ENOENT/, data => {
+            done();
+        });
+        myApp('backup', ['-d', '/tmp/1/2/3/4']);
+    });
+    
+    after('cleanup', function() {
+        del.sync(path.join(__dirname, '../newdeveloper'));
+    });
+});
+
+describe('run backup with invalid endpoint', () => {
+    it('log error and exit', function (done) {
+        this.timeout(20000);
+        subscribe('hue', /Invalid values/, data => {
+            done();
+        });
+        myApp('backup', ['-e', 'badendpoint']);
+    });
+    
+    after('cleanup', function() {
+        del.sync(path.join(__dirname, '../newdeveloper'));
+    });
+});
+
+describe('run backup with non-listening port', () => { 
+    it('log error and exit', function (done) {
+        this.timeout(20000);    // 20 seconds
+        subscribe('hue', /ECONNREFUSED/, data => {
+            done();
+        });
+        myApp('backup', ['-b', '0.0.0.0:9999', '-e', 'config']);
+    });
+    
+    after('cleanup', function() {
+        del.sync(path.join(__dirname, '../newdeveloper'));
+    });
+});
+
+describe('run restore with config file', () => { 
+    it('log error and exit', function (done) {
+        this.timeout(20000);    // 20 seconds
+        subscribe('hue', /not implimented yet/, data => {
+            done();
+        });
+        myApp('restore');
+    });
+});
+
+// describe('run backup with invalid ip address', () => { 
+//     it('log error and exit', function (done) {
+//         this.timeout(200000);   // 2 minutes
+//         subscribe('hue', /ETIMEDOUT/, data => {
+//             done();
+//         });
+//         runBackup(['-b', '192.0.2.100:9000', '-e', 'config']);
+//     });
+    
+//     after('cleanup', function() {
+//         del.sync(path.join(__dirname, '../newdeveloper'));
+//     });
+// });
