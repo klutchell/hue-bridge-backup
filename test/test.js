@@ -138,14 +138,14 @@ describe('run backup', () => {
     
     it('backup provided endpoints without error', function (done) {
         this.timeout(20000);
-        subscribe('hue', /saved .\/newdeveloper\/sensors.json/, data => {
+        subscribe('hue', /saved .\/newdeveloper\/schedules.json/, data => {
             done();
         });
         runBackup([]);
     });
     
     it('expect a json file for each endpoint', function() {
-        ['config','groups','lights','resourcelinks','rules','scenes','schedules','sensors'].forEach(function(endpoint){
+        ['config','groups','lights','schedules'].forEach(function(endpoint){
            expect('./newdeveloper/' + endpoint + '.json').to.be.a.jsonFile(); 
         });
     });
@@ -175,7 +175,7 @@ describe('run backup', () => {
     //     runBackup(['-b', '99.99.99.99:9000', '-e', 'config']);
     // });
     
-    after('cleanup', function() {
-        del.sync(path.join(__dirname, '../newdeveloper'));
-    });
+    // after('cleanup', function() {
+    //     del.sync(path.join(__dirname, '../newdeveloper'));
+    // });
 });

@@ -17,43 +17,34 @@ config.backupDir = argv.backupDir || "./" + argv.bridgeUser;
  * @param {string} backup directory
  * @param {array} hue endpoints
  */
-module.exports.backup = function(dir, arr) {
+module.exports.backup = function(outdir, endpoints) {
     
-    const getEndpoint = async (endpoint, outdir) => {
+    const getEndpoint = async (endpoint) => {
         
         const outfile = outdir + '/' + endpoint + '.json';
         const url = "http://" + config.bridgeIp + "/api/" + config.bridgeUser + "/" + endpoint;
         
         console.log("getting " + url);
         
-        const getEndpoint = async url => {
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                saveEndpoint(json);
-            } catch (err) {
-                console.log(err);
-            }
-        };
-
-        const saveEndpoint = async data => {
-            try {
-                await fs.mkpath(outdir);   // make sure path exists
-                await fs.writeFile(outfile, JSON.stringify(data, null, 2), { encoding: 'utf8' });   // write to file
-            } catch (err) {
-                console.log(err);
-            }
-        };
-
-        getEndpoint(url);
+        try {
+            const response = await fetch(url);
+            const json = await response.json();
+            await fs.mkpath(outdir);   // make sure path exists
+            await fs.writeFile(outfile, JSON.stringify(json, null, 2), { encoding: 'utf8' });   // write to file
+        } catch (err) {
+            console.log(err);
+        }
         
         console.log('saved ' + outfile);
+        
+        if (index >= endpoints.length) return;
+        
+        index++;
+        setTimeout(getEndpoint, 1000, endpoints[index]);
     };
     
-    // for each provided endpoint
-    arr.forEach(function(endpoint) {
-        getEndpoint(endpoint, dir);
-    });
+    var index = 0;
+    getEndpoint(endpoints[index]);
 };
 
 module.exports.restore = function(dir, arr) {
