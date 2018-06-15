@@ -167,13 +167,13 @@ describe('run backup', () => {
     });
 
     // long timeout here    
-    // it('timeout and log error when provided a bad address', function (done) {
-    //     this.timeout(200000);
-    //     subscribe('hue', /ETIMEDOUT/, data => {
-    //         done();
-    //     });
-    //     runBackup(['-b', '99.99.99.99:9000', '-e', 'config']);
-    // });
+    it('timeout and log error when provided a bad address', function (done) {
+        this.timeout(200000);
+        subscribe('hue', /ETIMEDOUT/, data => {
+            done();
+        });
+        runBackup(['-b', '99.99.99.99:9000', '-e', 'config']);
+    });
     
     after('cleanup', function() {
         del.sync(path.join(__dirname, '../newdeveloper'));

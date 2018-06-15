@@ -37,10 +37,13 @@ module.exports.backup = function(outdir, endpoints) {
         
         console.log('saved ' + outfile);
         
+        index++;
+        
         if (index >= endpoints.length) return;
         
-        index++;
-        setTimeout(getEndpoint, 1000, endpoints[index]);
+        setTimeout(function(endpoint){
+            getEndpoint(endpoint);
+        }.bind(this, endpoints[index]), 1000);
     };
     
     var index = 0;
