@@ -20,12 +20,12 @@ let simPipeErr;
 const simSubscriptions = {};
 const simBuffer = [];
 
-const hueCmd = path.join(__dirname, '../index.js');
-const hueArgs = ['--config-file', 'test/config.json'];
+const myAppCmd = path.join(__dirname, '../index.js');
+const myAppArgs = ['--config-file', 'test/config.json'];
 
-let hue;
-let huePipeOut;
-let huePipeErr;
+let myApp;
+let myAppPipeOut;
+let myAppPipeErr;
 const hueSubscriptions = {};
 const hueBuffer = [];
 
@@ -35,7 +35,7 @@ function subscribe(type, rx, cb) {
     subIndex += 1;
     if (type === 'sim') {
         simSubscriptions[subIndex] = {rx, cb};
-    } else if (type === 'hue') {
+    } else if (type === 'myApp') {
         hueSubscriptions[subIndex] = {rx, cb};
     }
     matchSubscriptions(type);
@@ -45,7 +45,7 @@ function subscribe(type, rx, cb) {
 // function unsubscribe(type, subIndex) {
 //     if (type === 'sim') {
 //         delete simSubscriptions[subIndex];
-//     } else if (type === 'hue') {
+//     } else if (type === 'myApp') {
 //         delete hueSubscriptions[subIndex];
 //     }
 // }
@@ -56,7 +56,7 @@ function matchSubscriptions(type, data) {
     if (type === 'sim') {
         subs = simSubscriptions;
         buf = simBuffer;
-    } else if (type === 'hue') {
+    } else if (type === 'myApp') {
         subs = hueSubscriptions;
         buf = hueBuffer;
     }
@@ -89,24 +89,24 @@ function startSim() {
     });
 }
 
-function myApp(cmd = 'backup', extra_args = []) {
-    var args = [cmd].concat(hueArgs, extra_args);
-    hue = cp.spawn(hueCmd, args);
-    huePipeOut = hue.stdout.pipe(streamSplitter('\n'));
-    huePipeErr = hue.stderr.pipe(streamSplitter('\n'));
-    huePipeOut.on('token', data => {
-        console.log('hue', data.toString());
-        matchSubscriptions('hue', data.toString());
+function runMyApp(cmd = 'backup', extra_args = []) {
+    var args = [cmd].concat(myAppArgs, extra_args);
+    myApp = cp.spawn(myAppCmd, args);
+    myAppPipeOut = myApp.stdout.pipe(streamSplitter('\n'));
+    myAppPipeErr = myApp.stderr.pipe(streamSplitter('\n'));
+    myAppPipeOut.on('token', data => {
+        console.log('myApp', data.toString());
+        matchSubscriptions('myApp', data.toString());
     });
-    huePipeErr.on('token', data => {
-        console.log('hue', data.toString());
-        matchSubscriptions('hue', data.toString());
+    myAppPipeErr.on('token', data => {
+        console.log('myApp', data.toString());
+        matchSubscriptions('myApp', data.toString());
     });
 }
 
 function end(code) {
-    if (hue.kill) {
-        hue.kill();
+    if (myApp.kill) {
+        myApp.kill();
     }
     if (sim.kill) {
         sim.kill();
@@ -138,10 +138,10 @@ describe('run backup with config file', () => {
     
     it('last endpoint saved', function (done) {
         this.timeout(20000);
-        subscribe('hue', /saved .\/newdeveloper\/schedules.json/, data => {
+        subscribe('myApp', /saved .\/newdeveloper\/schedules.json/, data => {
             done();
         });
-        myApp();
+        runMyApp();
     });
     
     it('expect a json file for each endpoint', function() {
@@ -150,7 +150,7 @@ describe('run backup with config file', () => {
         });
     });
     
-    after('cleanup', function() {
+    after(function() {
         del.sync(path.join(__dirname, '../newdeveloper'));
     });
 });
@@ -158,10 +158,10 @@ describe('run backup with config file', () => {
 describe('run backup with blank backup dir', () => {
     it('use ./{bridgeUser} as backup dir', function (done) {
         this.timeout(20000);
-        subscribe('hue', /saved .\/newdeveloper\/schedules.json/, data => {
+        subscribe('myApp', /saved .\/newdeveloper\/schedules.json/, data => {
             done();
         });
-        myApp('backup', ['-d', '']);
+        runMyApp('backup', ['-d', '']);
     });
     
     it('expect a json file for each endpoint', function() {
@@ -178,10 +178,10 @@ describe('run backup with blank backup dir', () => {
 describe('run backup with invalid backup dir', () => {
     it('log error and exit', function (done) {
         this.timeout(20000);
-        subscribe('hue', /ENOENT/, data => {
+        subscribe('myApp', /ENOENT/, data => {
             done();
         });
-        myApp('backup', ['-d', '/tmp/1/2/3/4']);
+        runMyApp('backup', ['-d', '/tmp/1/2/3/4']);
     });
     
     after('cleanup', function() {
@@ -192,10 +192,10 @@ describe('run backup with invalid backup dir', () => {
 describe('run backup with invalid endpoint', () => {
     it('log error and exit', function (done) {
         this.timeout(20000);
-        subscribe('hue', /Invalid values/, data => {
+        subscribe('myApp', /Invalid values/, data => {
             done();
         });
-        myApp('backup', ['-e', 'badendpoint']);
+        runMyApp('backup', ['-e', 'badendpoint']);
     });
     
     after('cleanup', function() {
@@ -206,10 +206,10 @@ describe('run backup with invalid endpoint', () => {
 describe('run backup with non-listening port', () => { 
     it('log error and exit', function (done) {
         this.timeout(20000);    // 20 seconds
-        subscribe('hue', /ECONNREFUSED/, data => {
+        subscribe('myApp', /ECONNREFUSED/, data => {
             done();
         });
-        myApp('backup', ['-b', '0.0.0.0:9999', '-e', 'config']);
+        runMyApp('backup', ['-b', '0.0.0.0:9999', '-e', 'config']);
     });
     
     after('cleanup', function() {
@@ -217,23 +217,23 @@ describe('run backup with non-listening port', () => {
     });
 });
 
-describe('run restore with config file', () => { 
-    it('log error and exit', function (done) {
-        this.timeout(20000);    // 20 seconds
-        subscribe('hue', /not implimented yet/, data => {
-            done();
-        });
-        myApp('restore');
-    });
-});
+// describe('run restore with config file', () => { 
+//     it('log error and exit', function (done) {
+//         this.timeout(20000);    // 20 seconds
+//         subscribe('myApp', /not implimented yet/, data => {
+//             done();
+//         });
+//         runMyApp('restore');
+//     });
+// });
 
 // describe('run backup with invalid ip address', () => { 
 //     it('log error and exit', function (done) {
 //         this.timeout(200000);   // 2 minutes
-//         subscribe('hue', /ETIMEDOUT/, data => {
+//         subscribe('myApp', /ETIMEDOUT/, data => {
 //             done();
 //         });
-//         runBackup(['-b', '192.0.2.100:9000', '-e', 'config']);
+//         runMyApp('backup', ['-b', '192.0.2.100:9000', '-e', 'config']);
 //     });
     
 //     after('cleanup', function() {
