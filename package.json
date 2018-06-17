@@ -1,6 +1,6 @@
 {
   "name": "hue-bridge-backup",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Backup and restore Philips Hue bridge configuration in raw JSON",
   "main": "index.js",
   "dependencies": {
