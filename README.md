@@ -31,9 +31,8 @@ current configuration and automatically restore lights and groups.
       -u, --bridge-user  Hue bridge user                         [string] [required]
       -d, --backup-dir   Path to Hue backup directory                       [string]
       -e, --endpoints    Hue endpoints list
-         [array] [required] [choices: "config", "groups", "lights", "resourcelinks",
-                                "rules", "scenes", "schedules", "sensors"] [default:
-                                                     ["rules","schedules","scenes"]]
+       [array] [required] [choices: "config", "groups", "lights", "rules", "scenes",
+                   "schedules", "sensors"] [default: ["rules","schedules","scenes"]]
       -h, --help         Show help                                         [boolean]
       -v, --version      Show version number                               [boolean]
     

@@ -7,6 +7,7 @@ const path = require('path');
 const chai = require('chai');
 const expect = chai.expect;
 const streamSplitter = require('stream-splitter');
+const fs = require('fs');
 const del = require('del');
 
 chai.use(require('chai-json'));
@@ -125,6 +126,11 @@ process.on('exit', () => {
 });
 
 describe('start hue-simulator', () => {
+    
+    before('cleanup', function() {
+        del.sync(path.join(__dirname, '../newdeveloper'));
+    });
+    
     it('hue-simulator should start without error', function (done)  {
         this.timeout(20000);
         subscribe('sim', /hue simulator listening/, data => {
@@ -134,7 +140,7 @@ describe('start hue-simulator', () => {
     });
 });
 
-describe('run backup with config file', () => {
+describe('backup endpoints from config file', () => {
     
     it('last endpoint saved', function (done) {
         this.timeout(20000);
@@ -145,37 +151,14 @@ describe('run backup with config file', () => {
     });
     
     it('expect a json file for each endpoint', function() {
-        ['config','groups','lights','schedules'].forEach(function(endpoint){
-           expect('./newdeveloper/' + endpoint + '.json').to.be.a.jsonFile(); 
+        fs.readdirSync(path.join(__dirname, '../newdeveloper')).forEach(file => {
+            console.log('checking ' + file);
+            expect('./newdeveloper/' + file).to.be.a.jsonFile();
         });
-    });
-    
-    after(function() {
-        del.sync(path.join(__dirname, '../newdeveloper'));
     });
 });
 
-describe('run backup with blank backup dir', () => {
-    it('use ./{bridgeUser} as backup dir', function (done) {
-        this.timeout(20000);
-        subscribe('myApp', /saved .\/newdeveloper\/schedules.json/, data => {
-            done();
-        });
-        runMyApp('backup', ['-d', '']);
-    });
-    
-    it('expect a json file for each endpoint', function() {
-        ['config','groups','lights','schedules'].forEach(function(endpoint){
-           expect('./newdeveloper/' + endpoint + '.json').to.be.a.jsonFile(); 
-        });
-    });
-    
-    after('cleanup', function() {
-        del.sync(path.join(__dirname, '../newdeveloper'));
-    });
-});
-
-describe('run backup with invalid backup dir', () => {
+describe('backup with invalid backup dir', () => {
     it('log error and exit', function (done) {
         this.timeout(20000);
         subscribe('myApp', /ENOENT/, data => {
@@ -183,13 +166,9 @@ describe('run backup with invalid backup dir', () => {
         });
         runMyApp('backup', ['-d', '/tmp/1/2/3/4']);
     });
-    
-    after('cleanup', function() {
-        del.sync(path.join(__dirname, '../newdeveloper'));
-    });
 });
 
-describe('run backup with invalid endpoint', () => {
+describe('backup with invalid endpoint', () => {
     it('log error and exit', function (done) {
         this.timeout(20000);
         subscribe('myApp', /Invalid values/, data => {
@@ -197,13 +176,9 @@ describe('run backup with invalid endpoint', () => {
         });
         runMyApp('backup', ['-e', 'badendpoint']);
     });
-    
-    after('cleanup', function() {
-        del.sync(path.join(__dirname, '../newdeveloper'));
-    });
 });
 
-describe('run backup with non-listening port', () => { 
+describe('backup with non-listening port', () => { 
     it('log error and exit', function (done) {
         this.timeout(20000);    // 20 seconds
         subscribe('myApp', /ECONNREFUSED/, data => {
@@ -211,32 +186,38 @@ describe('run backup with non-listening port', () => {
         });
         runMyApp('backup', ['-b', '0.0.0.0:9999', '-e', 'config']);
     });
+});
+
+describe('restore config', () => { 
+    it('simulator will return success', function (done) {
+        this.timeout(20000);    // 20 seconds
+        subscribe('myApp', /success: /, data => {
+            done();
+        });
+        runMyApp('restore', ['-e', 'config']);
+    });
+});
+
+describe('restore lights', () => { 
+    it('simulator will reject PUT', function (done) {
+        this.timeout(20000);    // 20 seconds
+        subscribe('myApp', /Cannot PUT \/api\/newdeveloper\/lights/, data => {
+            done();
+        });
+        runMyApp('restore', ['-e', 'lights']);
+    });
+});
+
+describe('restore groups', () => { 
+    it('simulator will reject PUT', function (done) {
+        this.timeout(20000);    // 20 seconds
+        subscribe('myApp', /Cannot PUT \/api\/newdeveloper\/groups/, data => {
+            done();
+        });
+        runMyApp('restore', ['-e', 'groups']);
+    });
     
     after('cleanup', function() {
         del.sync(path.join(__dirname, '../newdeveloper'));
     });
 });
-
-// describe('run restore with config file', () => { 
-//     it('log error and exit', function (done) {
-//         this.timeout(20000);    // 20 seconds
-//         subscribe('myApp', /not implimented yet/, data => {
-//             done();
-//         });
-//         runMyApp('restore');
-//     });
-// });
-
-// describe('run backup with invalid ip address', () => { 
-//     it('log error and exit', function (done) {
-//         this.timeout(200000);   // 2 minutes
-//         subscribe('myApp', /ETIMEDOUT/, data => {
-//             done();
-//         });
-//         runMyApp('backup', ['-b', '192.0.2.100:9000', '-e', 'config']);
-//     });
-    
-//     after('cleanup', function() {
-//         del.sync(path.join(__dirname, '../newdeveloper'));
-//     });
-// });

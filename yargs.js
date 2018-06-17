@@ -51,7 +51,7 @@ module.exports = require('yargs')
         description: 'Hue endpoints list',
         default: ['rules', 'schedules', 'scenes'],
         alias: 'endpoints',
-        choices: ['config','groups','lights','resourcelinks','rules','scenes','schedules','sensors'],
+        choices: ['config','groups','lights','rules','scenes','schedules','sensors'],
         demandOption: true
     })
     

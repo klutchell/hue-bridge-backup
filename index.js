@@ -52,7 +52,13 @@ module.exports.restore = (backupDir, endpoint) => {
     const infile = backupDir + '/' + endpoint + '.json';
     const url = 'http://' + config.bridgeIp + "/api/" + config.bridgeUser + "/" + endpoint;
     
-    const resources = Object.values(JSON.parse(fs.readFileSync(infile, 'utf8')));
+    const json = JSON.parse(fs.readFileSync(infile, 'utf8'));
+    
+    let resources = [];
+    if (endpoint === 'config')
+        resources = [json];
+    else
+        resources = Object.values(json);
     
     const putResource = (resource) => {
 
