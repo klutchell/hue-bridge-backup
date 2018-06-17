@@ -48,17 +48,6 @@ module.exports.backup = (backupDir, endpoint) => {
  * @param {string} hue endpoint
  */
 module.exports.restore = (backupDir, endpoint) => {
-        
-    const infile = backupDir + '/' + endpoint + '.json';
-    const url = 'http://' + config.bridgeIp + "/api/" + config.bridgeUser + "/" + endpoint;
-    
-    const json = JSON.parse(fs.readFileSync(infile, 'utf8'));
-    
-    let resources = [];
-    if (endpoint === 'config')
-        resources = [json];
-    else
-        resources = Object.values(json);
     
     const putResource = (resource) => {
 
@@ -87,6 +76,9 @@ module.exports.restore = (backupDir, endpoint) => {
         return;
     };
     
+    const infile = backupDir + '/' + endpoint + '.json';
+    const url = 'http://' + config.bridgeIp + "/api/" + config.bridgeUser + "/" + endpoint;
+    
     if (!fs.existsSync(backupDir)) {
         console.log('backup dir does not exist: ' + backupDir);
         return;
@@ -96,6 +88,14 @@ module.exports.restore = (backupDir, endpoint) => {
         console.log('backup file does not exist: ' + infile);
         return;
     }
+    
+    const json = JSON.parse(fs.readFileSync(infile, 'utf8'));
+    
+    let resources = [];
+    if (endpoint === 'config')
+        resources = [json];
+    else
+        resources = Object.values(json);
     
     let resourceIdx = 0;
     putResource(resources[resourceIdx]);

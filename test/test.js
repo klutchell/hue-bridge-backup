@@ -221,3 +221,23 @@ describe('restore groups', () => {
         del.sync(path.join(__dirname, '../newdeveloper'));
     });
 });
+
+describe('restore from non-existing dir', () => { 
+    it('log error and exit', function (done) {
+        this.timeout(20000);    // 20 seconds
+        subscribe('myApp', /backup dir does not exist/, data => {
+            done();
+        });
+        runMyApp('restore', ['-d', '/tmp/1/2/3/4']);
+    });
+});
+
+describe('restore from empty dir', () => { 
+    it('log error and exit', function (done) {
+        this.timeout(20000);    // 20 seconds
+        subscribe('myApp', /backup file does not exist/, data => {
+            done();
+        });
+        runMyApp('restore', ['-d', '/tmp', '-e', 'lights']);
+    });
+});
