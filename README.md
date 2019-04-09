@@ -1,5 +1,7 @@
 # hue-bridge-backup
 
+## ☠ This package is no longer maintained ☠
+
 Backup and restore [Philips Hue](https://www.developers.meethue.com/) bridge
 configuration in raw JSON for easy editing.
 
