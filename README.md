@@ -42,6 +42,16 @@ current configuration and automatically restore lights and groups.
       index.js backup -b "192.168.86.131" -u <uuid> -d ./my-backup -e rules scenes
       index.js restore -d ./my-backup
 
+## Issues
+
+It seems that the only way to do a restore, is to:
+
+  1. reset your old bridge (and all of the lights and accessories connected to it)
+  2. add your lights (maximum 10 at a time) to the new bridge
+  3. attempt to run the restore command
+
+See <https://github.com/klutchell/hue-bridge-backup/issues/2>
+
 ## Tests
 
 [![Build Status](https://travis-ci.org/klutchell/hue-bridge-backup.svg?branch=master)](https://travis-ci.org/klutchell/hue-bridge-backup)
